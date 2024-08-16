@@ -20,19 +20,6 @@ vim.g.have_nerd_font = true
 -- See `:help vim.opt`
 -- For more options, you can see `:help option-list`
 
--- local powershell_options = {
---   shell = vim.fn.executable 'pwsh' == 1 and 'pwsh' or 'powershell',
---   shellcmdflag = '-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;$PSStyle.OutputRendering = [System.Management.Automation.OutputRendering]::PlainText;',
---   shellredir = '-RedirectStandardOutput %s -NoNewWindow -Wait',
---   shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode',
---   shellquote = '',
---   shellxquote = '',
--- }
---
--- for option, value in pairs(powershell_options) do
---   vim.opt[option] = value
--- end
-
 vim.opt.number = true
 vim.opt.relativenumber = true
 
@@ -782,18 +769,15 @@ require('lazy').setup({
     end,
   },
 
-  -- {
-  --   '2kabhishek/termim.nvim',
-  --   cmd = { 'Fterm', 'FTerm', 'Sterm', 'STerm', 'Vterm', 'VTerm' },
-  -- },
-  -- {
-  --   'akinsho/toggleterm.nvim',
-  --   version = '*',
-  --   opts = {
-  --     open_mapping = [[<C-t>]],
-  --     close_on_exit = false,
-  --   },
-  -- },
+  {
+    'akinsho/toggleterm.nvim',
+    version = '*',
+    opts = {
+      open_mapping = [[<C-t>]],
+      -- persist_mode = false,  -- Decided against this, because it undermines  auto_scroll = false
+      -- close_on_exit = false,  -- Helpful for debugging crashes
+    },
+  },
 
   -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
   --
