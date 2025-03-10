@@ -1,0 +1,68 @@
+return {}
+
+-- return {
+--   'voldikss/vim-floaterm',
+--   config = function()
+--     vim.keymap.set('n', '<C-t>', ':FloatermToggle<CR>')
+--     vim.keymap.set('t', '<C-t>', '<C-\\><C-n>:FloatermToggle<CR>')
+--
+--     -- vim.keymap.set('n', '<Leader>e', ':FloatermNew --autoclose=1 ./run.sh<CR>', { desc = '[E]xecute Program (./run.sh)' })
+--     -- vim.keymap.set(
+--     --   'n',
+--     --   '<Leader>e',
+--     --   ':FloatermToggle --name execute<CR> <C-\\><C-n>:FloatermShow execute<CR> ./run.sh<CR>',
+--     --   { desc = '[E]xecute Program (./run.sh)' }
+--     -- )
+--   end,
+-- }
+
+-- return { 'akinsho/toggleterm.nvim',
+--   version = '*',
+--   config = function()
+--     local opened = false
+--
+--     require('toggleterm').setup {
+--       -- persist_size = false,
+--       -- size = function(term)
+--       --   if term.direction == 'horizontal' then
+--       --     local h = math.floor(0.5 * vim.fn.winheight(0))
+--       --     print('height!' .. h)
+--       --     return h
+--       --   elseif term.direction == 'vertical' then
+--       --     local w = math.floor(0.35 * vim.fn.winwidth(0))
+--       --     print('width!' .. w)
+--       --     return w
+--       --   end
+--       -- end,
+--       open_mapping = [[<C-t>]],
+--       on_open = function()
+--         opened = true
+--       end,
+--       on_close = function()
+--         opened = false
+--       end,
+--     }
+--
+--     local close = function()
+--       if opened then
+--         vim.cmd 'ToggleTerm'
+--       end
+--     end
+--
+--     local vertical_terminal = function()
+--       close()
+--       local w = math.floor(0.35 * vim.fn.winwidth(0))
+--       vim.cmd('ToggleTerm direction=vertical size=' .. w)
+--     end
+--
+--     local horizontal_terminal = function()
+--       close()
+--       vim.cmd 'ToggleTerm direction=horizontal'
+--     end
+--
+--     vim.keymap.set('n', '<leader>Tj', horizontal_terminal, { desc = 'Move [T]erminal Down [j]' })
+--     vim.keymap.set('n', '<leader>Tl', vertical_terminal, { desc = 'Move [T]erminal Right [l]' })
+--     -- persist_mode = false,  -- Decided against this, because it undermines  auto_scroll = false
+--     -- close_on_exit = false,  -- Helpful for debugging crashes
+--   end,
+-- },
