@@ -14,6 +14,10 @@ return {
           vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
         end
 
+        local imap = function(keys, func, desc)
+          vim.keymap.set('i', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+        end
+
         map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
         map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
         map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
@@ -64,6 +68,17 @@ return {
       end,
     })
 
+    -- Taken from: https://github.com/neovim/nvim-lspconfig/blob/fd26f8626c03b424f7140d454031d1dcb8d23513/lua/lspconfig/configs/pyright.lua#L3-L11
+    local python_root_files = {
+      'pyproject.toml',
+      'setup.py',
+      'setup.cfg',
+      'requirements.txt',
+      'Pipfile',
+      'pyrightconfig.json',
+      '.git',
+    }
+
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
@@ -83,7 +98,30 @@ return {
         -- This is for when you're running nvim in WSL, but want to use the Windows installation of clangd
         -- cmd = { 'clangd.exe' }
       },
-      pyright = {},
+      -- basedpyright = {
+      --   root_dir = function(fname)
+      --     local result = vim.fs.root(fname, python_root_files)
+      --     print('found root dir = ' .. result)
+      --     return result
+      --   end,
+      -- },
+      pylsp = {
+        settings = {
+          pylsp = {
+            plugins = {
+              autopep8 = { enabled = true },
+              flake8 = { enabled = false },
+              mccabe = { enabled = true },
+              pycodestyle = { enabled = false },
+              pyflakes = { enabled = false },
+              pylint = { enabled = false },
+              rope_autoimport = { enabled = true },
+              rope_completion = { enabled = false },
+              yapf = { enabled = false },
+            },
+          },
+        },
+      },
       markdown_oxide = {
         workspace = {
           didChangeWatchedFiles = {
@@ -99,12 +137,18 @@ return {
       require('lspconfig')[server_name].setup(server)
     end
 
+    local disabled = function(server_name) end
+
     -- These servers are assumed to be installed externally already
     setup_server 'clangd'
 
     -- The rest are installed by mason
     require('mason').setup()
     require('mason-lspconfig').setup()
-    require('mason-lspconfig').setup_handlers { setup_server }
+    require('mason-lspconfig').setup_handlers {
+      setup_server,
+      ['jedi_language_server'] = disabled,
+      ['basedpyright'] = disabled,
+    }
   end,
 }
