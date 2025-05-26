@@ -98,29 +98,46 @@ return {
         -- This is for when you're running nvim in WSL, but want to use the Windows installation of clangd
         -- cmd = { 'clangd.exe' }
       },
+      -----------------------------
+      -- Couldn't figure out how to get this to only use types for suggestions,
+      -- not for yelling at me in a million places!
+      -----------------------------
       -- basedpyright = {
+      --   settings = {
+      --     basedpyright = {
+      --       analysis = {
+      --         typeCheckingMode = 'basic',
+      --       },
+      --     },
+      --   },
       --   root_dir = function(fname)
       --     local result = vim.fs.root(fname, python_root_files)
       --     print('found root dir = ' .. result)
       --     return result
       --   end,
       -- },
-      pylsp = {
-        settings = {
-          pylsp = {
-            plugins = {
-              autopep8 = { enabled = true },
-              flake8 = { enabled = false },
-              mccabe = { enabled = true },
-              pycodestyle = { enabled = false },
-              pyflakes = { enabled = false },
-              pylint = { enabled = false },
-              rope_autoimport = { enabled = true },
-              rope_completion = { enabled = false },
-              yapf = { enabled = false },
-            },
-          },
-        },
+      -----------------------------
+      -- pylsp = {
+      --   settings = {
+      --     pylsp = {
+      --       plugins = {
+      --         autopep8 = { enabled = true },
+      --         flake8 = { enabled = false },
+      --         mccabe = { enabled = true },
+      --         pycodestyle = { enabled = false },
+      --         pyflakes = { enabled = false },
+      --         pylint = { enabled = false },
+      --         rope_autoimport = { enabled = true },
+      --         rope_completion = { enabled = false },
+      --         yapf = { enabled = false },
+      --       },
+      --     },
+      --   },
+      -- },
+      pyright = {
+        root_dir = function(fname)
+          return vim.fs.root(fname, python_root_files)
+        end,
       },
       markdown_oxide = {
         workspace = {
@@ -149,6 +166,7 @@ return {
       setup_server,
       ['jedi_language_server'] = disabled,
       ['basedpyright'] = disabled,
+      ['pylsp'] = disabled,
     }
   end,
 }
