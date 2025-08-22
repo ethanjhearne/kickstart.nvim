@@ -82,6 +82,12 @@ return {
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
+    local format_settings = {
+      format = {
+        convertTabsToSpaces = true,
+        indentSize = 4,
+      },
+    }
     local servers = {
       lua_ls = {
         settings = {
@@ -97,6 +103,8 @@ return {
       clangd = {
         -- This is for when you're running nvim in WSL, but want to use the Windows installation of clangd
         -- cmd = { 'clangd.exe' }
+        -- cmd = { 'clangd', '-w' },
+        cmd = { 'clangd', '--function-arg-placeholders=0' },
       },
       -----------------------------
       -- Couldn't figure out how to get this to only use types for suggestions,
@@ -138,6 +146,12 @@ return {
         root_dir = function(fname)
           return vim.fs.root(fname, python_root_files)
         end,
+      },
+      tsserver = {
+        settings = {
+          javascript = format_settings,
+          typescript = format_settings,
+        },
       },
       markdown_oxide = {
         workspace = {

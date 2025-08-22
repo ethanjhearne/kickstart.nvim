@@ -29,6 +29,9 @@ return {
         ['ui-select'] = {
           require('telescope.themes').get_dropdown(),
         },
+        file_browser = {
+          hijack_netrw = true,
+        },
       },
     }
 
