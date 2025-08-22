@@ -1,7 +1,7 @@
 require 'options'
 require 'keymaps'
 require 'autocommands'
-require 'goto_github'
+require 'goto-github'
 
 -- local terminal_handle = nil
 -- vim.keymap.set("n", "<leader>t", function()
