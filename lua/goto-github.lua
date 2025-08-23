@@ -34,7 +34,7 @@ local goto_github = function(opts)
 
   -- Look for HTTPS format URL
   local url_to_repo = origin_url:match '^(https://.*)%.git$'
-  if not url_to_repo then
+  if not found(url_to_repo) then
     -- Look for username@domain.com:repo_name.git (SSH format)
     local domain, repo_name = origin_url:match '^.+@(.+):(.+)%.git$'
     if found(domain) and found(repo_name) then
