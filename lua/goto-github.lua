@@ -2,20 +2,12 @@ local escape_punctuation = function(str)
   return str:gsub('%p', '%%%1')
 end
 
-local get_fragment_identifier = function()
-  local mode = vim.api.nvim_get_mode().mode
-  if mode == 'n' then
-    local cursorPosition = vim.api.nvim_win_get_cursor(0)
-    return '#L' .. cursorPosition[1]
+local get_fragment_identifier = function(opts)
+  local result = ''
+  if opts.line1 == opts.line2 then
+    return '#L' .. opts.line1
   end
-  if mode == 'v' then
-    local startPos = vim.fn.getpos "'<"
-    local startLine = startPos[2]
-    local endPos = vim.fn.getpos "'>"
-    local endLine = endPos[2]
-    return '#L' .. startLine .. '-' .. 'L' .. endLine
-  end
-  return ''
+  return '#L' .. opts.line1 .. '-L' .. opts.line2
 end
 
 local trim = function(str)
@@ -28,7 +20,7 @@ local found = function(str)
   return str ~= nil and str ~= ''
 end
 
-local goto_github = function()
+local goto_github = function(opts)
   local err = vim.api.nvim_err_writeln
   local call = function(cmd)
     return trim(vim.fn.system(cmd))
@@ -65,11 +57,12 @@ local goto_github = function()
 
   -- https://github.com/ethanjhearne/kickstart.nvim/blob/master/lua/autocommands.lua
   local branch = call 'git branch --show-current'
-  local url = url_to_repo .. '/blob/' .. branch .. '/' .. filepath .. get_fragment_identifier()
+  local url = url_to_repo .. '/blob/' .. branch .. '/' .. filepath .. get_fragment_identifier(opts)
 
   print('Opening... ' .. url)
-  -- Old way:
-  -- vim.fn.system('open ' .. url)
   vim.ui.open(url)
 end
-vim.keymap.set('n', 'gh', goto_github, { desc = '[G]o to this line on Git[H]ub' })
+
+vim.api.nvim_create_user_command('GotoGitHub', goto_github, { range = true })
+vim.keymap.set('n', 'gh', ':GotoGitHub<CR>', { desc = '[G]o to this line on Git[H]ub', noremap = true })
+vim.keymap.set('v', 'gh', ":'<,'>GotoGitHub<CR>", { desc = '[G]o to this line on Git[H]ub', noremap = true })
