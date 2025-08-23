@@ -1,3 +1,5 @@
+vim.keymap.set('n', '<leader>t', ':term<CR>', { desc = 'Open [t]erminal' })
+
 local function comma_separated_filter(func, csl)
   local tbl = vim.split(csl, ',')
   local new_tbl = vim.tbl_filter(func, tbl)

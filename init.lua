@@ -2,25 +2,6 @@ require 'misc'
 require 'terminal'
 require 'goto-github'
 
--- local terminal_handle = nil
--- vim.keymap.set("n", "<leader>t", function()
---   if terminal_handle == nil then
---     vim.cmd("botright term")
---     vim.api.nvim_win_set_height(0, 15)
---
---     terminal_handle = { win_id = vim.api.nvim_get_current_win(), job_id = vim.bo.channel }
---     vim.api.nvim_create_autocmd('WinClose', {
---       buffer=terminal_handle.win_id
---       callback = function()
---         terminal_handle = nil
---       end
---     })
---
---   else
---     vim.api.nvim_set_current_win(terminal_handle.win_id)
---   end
--- end)
---
 -- [[ Basic Autocommands ]]
 
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -160,13 +141,6 @@ require('lazy').setup({
   -- require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    This is the easiest way to modularize your config.
-  --
-  --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  { import = 'custom.plugins' },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
