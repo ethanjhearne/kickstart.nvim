@@ -1,6 +1,5 @@
-require 'options'
-require 'keymaps'
-require 'autocommands'
+require 'misc'
+require 'terminal'
 require 'goto-github'
 
 -- local terminal_handle = nil

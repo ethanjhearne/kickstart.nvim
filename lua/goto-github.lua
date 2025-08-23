@@ -3,7 +3,6 @@ local escape_punctuation = function(str)
 end
 
 local get_fragment_identifier = function(opts)
-  local result = ''
   if opts.line1 == opts.line2 then
     return '#L' .. opts.line1
   end
@@ -55,7 +54,6 @@ local goto_github = function(opts)
     return
   end
 
-  -- https://github.com/ethanjhearne/kickstart.nvim/blob/master/lua/autocommands.lua
   local branch = call 'git branch --show-current'
   local url = url_to_repo .. '/blob/' .. branch .. '/' .. filepath .. get_fragment_identifier(opts)
 
@@ -64,5 +62,5 @@ local goto_github = function(opts)
 end
 
 vim.api.nvim_create_user_command('GotoGitHub', goto_github, { range = true })
-vim.keymap.set('n', 'gh', ':GotoGitHub<CR>', { desc = '[G]o to this line on Git[H]ub', noremap = true })
-vim.keymap.set('v', 'gh', ":'<,'>GotoGitHub<CR>", { desc = '[G]o to this line on Git[H]ub', noremap = true })
+vim.keymap.set('n', 'gh', ':GotoGitHub<CR>', { desc = '[G]o to this line on Git[H]ub' })
+vim.keymap.set('x', 'gh', ":'<,'>GotoGitHub<CR>", { desc = '[G]o to this line on Git[H]ub' })
