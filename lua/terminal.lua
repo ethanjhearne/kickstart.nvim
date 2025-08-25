@@ -1,11 +1,3 @@
-vim.keymap.set('n', '<leader>t', ':term<CR>', { desc = 'Open [t]erminal' })
-
-local function comma_separated_filter(func, csl)
-  local tbl = vim.split(csl, ',')
-  local new_tbl = vim.tbl_filter(func, tbl)
-  return table.concat(new_tbl, ',')
-end
-
 local function adjust_color(hex, factor)
   if not hex then
     return nil
@@ -35,6 +27,7 @@ local function define_term_highlights()
   })
 end
 
+vim.keymap.set('n', '<leader>t', ':term<CR>', { desc = 'Open [t]erminal' })
 define_term_highlights()
 
 vim.api.nvim_create_autocmd('ColorScheme', {
@@ -43,55 +36,35 @@ vim.api.nvim_create_autocmd('ColorScheme', {
 
 vim.api.nvim_create_autocmd('TermOpen', {
   group = vim.api.nvim_create_augroup('custom-term-open', { clear = true }),
-  callback = function()
+  callback = function(ev)
     vim.cmd.startinsert()
-  end,
-})
 
-vim.api.nvim_create_autocmd('TermEnter', {
-  group = vim.api.nvim_create_augroup('custom-term-enter', { clear = true }),
-  callback = function()
-    vim.api.nvim_set_option_value('winhighlight', 'Normal:TermNormal', { win = 0 })
-    vim.opt.number = false
-    vim.opt.relativenumber = false
-  end,
-})
+    vim.api.nvim_create_autocmd('TermEnter', {
+      group = vim.api.nvim_create_augroup('custom-term-enter', { clear = true }),
+      buffer = ev.buf,
+      callback = function()
+        vim.api.nvim_set_option_value('winhighlight', 'Normal:TermNormal', { scope = 'local' })
+        vim.opt.number = false
+        vim.opt.relativenumber = false
+      end,
+    })
 
-vim.api.nvim_create_autocmd('TermLeave', {
-  group = vim.api.nvim_create_augroup('custom-term-leave', { clear = true }),
-
-  -- This pattern is important because when exiting a terminal session, the
-  -- window is automatically closed and the TermLeave event fires on the
-  -- **newly-entered** buffer!
-  --
-  -- This is still technically incorrect, because it'll still trigger if the
-  -- new buffer is also a terminal buffer. However because I don't enter insert
-  -- mode automatically when re-entering a terminal buffer, it has no visible
-  -- effect (the terminal buffer should already be in the dimmed state)
-  pattern = 'term://*',
-
-  callback = function(ev)
-    vim.print(ev)
-    vim.api.nvim_set_option_value('winhighlight', 'Normal:TermDim', { win = 0 })
-    vim.opt.number = true
-    vim.opt.relativenumber = true
-  end,
-})
-
--- Whenever we enter a non-terminal buffer, clean up after ourselves by
--- removing the custom terminal highlighting (if it exists)
-vim.api.nvim_create_autocmd('BufEnter', {
-  group = vim.api.nvim_create_augroup('custom-buf-enter', { clear = true }),
-  callback = function(ev)
-    if vim.bo[ev.buf].buftype ~= 'terminal' then
-      local hl = vim.api.nvim_get_option_value('winhighlight', {})
-
-      local new_hl = comma_separated_filter(function(v)
-        return v ~= 'Normal:TermNormal' and v ~= 'Normal:TermDim'
-      end, hl)
-
-      vim.api.nvim_set_option_value('winhighlight', new_hl, {})
-    end
+    vim.api.nvim_create_autocmd('TermLeave', {
+      group = vim.api.nvim_create_augroup('custom-term-leave', { clear = true }),
+      -- Attaching to individual terminal buffers is important because it
+      -- prevents TermLeave firing on a window that you've switched to after
+      -- `exit`-ing a terminal session.
+      buffer = ev.buf,
+      callback = function()
+        -- Local scope is important because it applies the highlight only when
+        -- this buffer is shown in this window. Otherwise, loading a new buffer
+        -- in the same window retains the dim effect.
+        -- See :help local-options
+        vim.api.nvim_set_option_value('winhighlight', 'Normal:TermDim', { scope = 'local' })
+        vim.opt.number = true
+        vim.opt.relativenumber = true
+      end,
+    })
   end,
 })
 
