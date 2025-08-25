@@ -59,7 +59,19 @@ vim.api.nvim_create_autocmd('TermEnter', {
 
 vim.api.nvim_create_autocmd('TermLeave', {
   group = vim.api.nvim_create_augroup('custom-term-leave', { clear = true }),
-  callback = function()
+
+  -- This pattern is important because when exiting a terminal session, the
+  -- window is automatically closed and the TermLeave event fires on the
+  -- **newly-entered** buffer!
+  --
+  -- This is still technically incorrect, because it'll still trigger if the
+  -- new buffer is also a terminal buffer. However because I don't enter insert
+  -- mode automatically when re-entering a terminal buffer, it has no visible
+  -- effect (the terminal buffer should already be in the dimmed state)
+  pattern = 'term://*',
+
+  callback = function(ev)
+    vim.print(ev)
     vim.api.nvim_set_option_value('winhighlight', 'Normal:TermDim', { win = 0 })
     vim.opt.number = true
     vim.opt.relativenumber = true
