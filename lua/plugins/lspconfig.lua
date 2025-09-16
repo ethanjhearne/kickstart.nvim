@@ -14,6 +14,7 @@ return {
           vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
         end
 
+        -- The following two autocommands are used to highlight references of the
         local imap = function(keys, func, desc)
           vim.keymap.set('i', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
         end
@@ -31,13 +32,12 @@ return {
         map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
         map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
-        -- The following two autocommands are used to highlight references of the
         -- word under your cursor when your cursor rests there for a little while.
         --    See `:help CursorHold` for information about when this is executed
         --
         -- When you move your cursor, the highlights will be cleared (the second autocommand).
         local client = vim.lsp.get_client_by_id(event.data.client_id)
-        if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+        if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
           local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
           vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
             buffer = event.buf,
@@ -60,7 +60,7 @@ return {
           })
         end
 
-        if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+        if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
           map('<leader>th', function()
             vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
           end, '[T]oggle Inlay [H]ints')
@@ -68,105 +68,24 @@ return {
       end,
     })
 
-    -- Taken from: https://github.com/neovim/nvim-lspconfig/blob/fd26f8626c03b424f7140d454031d1dcb8d23513/lua/lspconfig/configs/pyright.lua#L3-L11
-    local python_root_files = {
-      'pyproject.toml',
-      'setup.py',
-      'setup.cfg',
-      'requirements.txt',
-      'Pipfile',
-      'pyrightconfig.json',
-      '.git',
-    }
-
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+    vim.lsp.config('*', { capabilities = capabilities })
 
-    local servers = {
-      lua_ls = {
-        settings = {
-          Lua = {
-            completion = {
-              callSnippet = 'Replace',
-            },
-            -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-            -- diagnostics = { disable = { 'missing-fields' } },
-          },
-        },
-      },
-      clangd = {
-        -- This is for when you're running nvim in WSL, but want to use the Windows installation of clangd
-        -- cmd = { 'clangd.exe' }
-      },
-      -----------------------------
-      -- Couldn't figure out how to get this to only use types for suggestions,
-      -- not for yelling at me in a million places!
-      -----------------------------
-      -- basedpyright = {
-      --   settings = {
-      --     basedpyright = {
-      --       analysis = {
-      --         typeCheckingMode = 'basic',
-      --       },
-      --     },
-      --   },
-      --   root_dir = function(fname)
-      --     local result = vim.fs.root(fname, python_root_files)
-      --     print('found root dir = ' .. result)
-      --     return result
-      --   end,
-      -- },
-      -----------------------------
-      -- pylsp = {
-      --   settings = {
-      --     pylsp = {
-      --       plugins = {
-      --         autopep8 = { enabled = true },
-      --         flake8 = { enabled = false },
-      --         mccabe = { enabled = true },
-      --         pycodestyle = { enabled = false },
-      --         pyflakes = { enabled = false },
-      --         pylint = { enabled = false },
-      --         rope_autoimport = { enabled = true },
-      --         rope_completion = { enabled = false },
-      --         yapf = { enabled = false },
-      --       },
-      --     },
-      --   },
-      -- },
-      pyright = {
-        root_dir = function(fname)
-          return vim.fs.root(fname, python_root_files)
-        end,
-      },
-      markdown_oxide = {
-        workspace = {
-          didChangeWatchedFiles = {
-            dynamicRegistration = true,
-          },
-        },
-      },
-    }
+    -- Servers that are managed by Mason
+    -- TODO: add jsonlsp?
+    local mason_servers = { 'lua_ls', 'pyright', 'markdown_oxide' }
 
-    local setup_server = function(server_name)
-      local server = servers[server_name] or {}
-      server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-      require('lspconfig')[server_name].setup(server)
-    end
-
-    local disabled = function(server_name) end
-
-    -- These servers are assumed to be installed externally already
-    setup_server 'clangd'
-
-    -- The rest are installed by mason
     require('mason').setup()
-    require('mason-lspconfig').setup()
-    require('mason-lspconfig').setup_handlers {
-      setup_server,
-      ['jedi_language_server'] = disabled,
-      ['basedpyright'] = disabled,
-      ['pylsp'] = disabled,
+    require('mason-lspconfig').setup {
+      ensure_installed = mason_servers,
+      automatic_enable = true,
     }
+
+    -- Servers that are managed by me (assume these are installed already)
+    local my_servers = { 'clangd' }
+    for _, server in ipairs(my_servers) do
+      vim.lsp.enable(server)
+    end
   end,
 }

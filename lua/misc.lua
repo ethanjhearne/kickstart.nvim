@@ -28,6 +28,7 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 vim.opt.scrolloff = 5
+vim.opt.winborder = 'rounded'
 
 -- KEYMAPS --
 
@@ -61,18 +62,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('custom-highlight-yank', { clear = true }),
   callback = function()
     vim.highlight.on_yank()
-  end,
-})
-
-vim.api.nvim_create_autocmd('LspAttach', {
-  callback = function(event)
-    vim.diagnostic.config {
-      float = {
-        border = 'rounded',
-      },
-    }
-    vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = 'rounded' })
-    vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = 'rounded' })
   end,
 })
 
