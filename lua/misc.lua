@@ -30,6 +30,8 @@ vim.opt.cursorline = true
 vim.opt.scrolloff = 5
 vim.opt.winborder = 'rounded'
 
+vim.diagnostic.config { virtual_lines = { current_line = true } }
+
 -- KEYMAPS --
 
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
