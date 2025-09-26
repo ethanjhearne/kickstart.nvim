@@ -39,7 +39,7 @@ vim.diagnostic.config { virtual_text = true }
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 vim.keymap.set('n', '<leader>cq', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
-vim.keymap.set('n', '<leader>q', ':q<CR>', { desc = '[Q]uit' })
+vim.keymap.set('n', '<leader>q', ':confirm q<CR>', { desc = '[Q]uit' })
 vim.keymap.set('n', '<leader>w', ':w<CR>', { desc = '[W]rite' })
 
 vim.keymap.set('t', '<Esc>', '<C-\\><C-N>', { desc = 'Exit terminal mode' })

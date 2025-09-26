@@ -38,6 +38,8 @@ return {
       yaml = { 'prettier' },
       html = { 'prettier' },
       css = { 'prettier' },
+      js = { 'prettier' },
+      typst = { 'typstyle' },
       go = { 'goimports' },
     },
   },

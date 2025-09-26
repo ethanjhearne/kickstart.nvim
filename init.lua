@@ -45,6 +45,8 @@ require('lazy').setup({
   -- TODO: See if you like this even better paired with fugitive
   require 'plugins.gitsigns',
 
+  require 'plugins.typst-preview',
+
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
